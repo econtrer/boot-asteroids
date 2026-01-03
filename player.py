@@ -6,6 +6,7 @@ class Player(CircleShape):
     def __init__(self, x, y):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
+        self.draw_hitbox = False
   
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -17,6 +18,8 @@ class Player(CircleShape):
 
     def draw(self, screen):
         pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
+        if self.draw_hitbox:
+            pygame.draw.circle(screen, "red", self.position, PLAYER_RADIUS, LINE_WIDTH)
     
     def update(self, dt):
         keys = pygame.key.get_pressed()
