@@ -4,6 +4,7 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
+from hud import Hud
 from constants import *
 from logger import log_state, log_event
 
@@ -28,10 +29,11 @@ def main():
     Asteroid.containers = (asteroids, updatable, drawable)
     AsteroidField.containers = (updatable)
     Shot.containers = (shots, updatable, drawable)
-
+    Hud.containers = (drawable)
     
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     # player.draw_hitbox = True
+    hud = Hud()
     asteroid_field = AsteroidField()
 
     while True:
@@ -57,7 +59,8 @@ def main():
             for shot in shots:
                 if asteroid.collides_with(shot):
                     log_event("asteroid_shot")
-                    asteroid.split()
+                    score = asteroid.split()
+                    hud.score += score
                     shot.kill()
 
 if __name__ == "__main__":
