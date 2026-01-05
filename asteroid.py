@@ -14,6 +14,8 @@ class Asteroid(CircleShape):
     
     def update(self, dt):
         self.position += (self.velocity * dt)
+        # wrap around screen
+        self.wrap()
 
     def split(self):
         score = ASTEROID_KINDS - self.kind + 1

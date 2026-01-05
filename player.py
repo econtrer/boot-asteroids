@@ -61,6 +61,8 @@ class Player(CircleShape):
 
         # Update position from velocity
         self.position += self.velocity * dt
+        # wrap around screen
+        self.wrap()
 
         # Shoot
         if keys[pygame.K_SPACE]:

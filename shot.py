@@ -11,3 +11,5 @@ class Shot(CircleShape):
     
     def update(self, dt):
         self.position += (self.velocity * dt)
+        # wrap around screen
+        self.wrap()
