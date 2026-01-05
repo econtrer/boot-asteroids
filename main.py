@@ -5,6 +5,7 @@ from asteroid import Asteroid
 from asteroidfield import AsteroidField
 from shot import Shot
 from hud import Hud
+from explosion import Explosion
 from constants import *
 from logger import log_state, log_event
 
@@ -30,6 +31,7 @@ def main():
     AsteroidField.containers = (updatable)
     Shot.containers = (shots, updatable, drawable)
     Hud.containers = (drawable)
+    Explosion.containers = (updatable, drawable)
     
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     player.draw_hitbox = False
@@ -68,6 +70,13 @@ def main():
             for shot in shots:
                 if asteroid.collides_with(shot):
                     log_event("asteroid_shot")
+                    # spawn explosion scaled to asteroid radius
+                    Explosion(
+                        asteroid.position.x,
+                        asteroid.position.y,
+                        particle_count=int(max(6, asteroid.radius // 2)),
+                        radius_scale=(asteroid.radius / ASTEROID_MIN_RADIUS),
+                    )
                     score = asteroid.split()
                     hud.score += score
                     shot.kill()
