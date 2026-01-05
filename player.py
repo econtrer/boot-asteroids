@@ -9,7 +9,13 @@ class Player(CircleShape):
         self.rotation = 0
         self.draw_hitbox = False
         self.shoot_cd_timer = 0
+        self.respawn_invincibility_timer = 0
+        self.lifes = PLAYER_MAX_LIFES
+        self.is_blinking = False
   
+    def is_invincible(self):
+        return self.respawn_invincibility_timer > 0
+
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
         right = pygame.Vector2(0, 1).rotate(self.rotation + 90) * self.radius / 1.5
@@ -19,6 +25,8 @@ class Player(CircleShape):
         return [a, b, c]
 
     def draw(self, screen):
+        if self.is_blinking and (self.respawn_invincibility_timer % 0.2) > 0.1: # ~100 ms visible, ~100 ms invisible
+            return
         pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
         if self.draw_hitbox:
             pygame.draw.circle(screen, "red", self.position, PLAYER_RADIUS, LINE_WIDTH)
@@ -44,6 +52,11 @@ class Player(CircleShape):
         
         if self.shoot_cd_timer > 0:
             self.shoot_cd_timer -= dt
+        
+        if self.respawn_invincibility_timer > 0:
+            self.respawn_invincibility_timer -= dt
+        else:
+            self.is_blinking = False
     
     def rotate(self, dt):
         self.rotation += (PLAYER_TURN_SPEED * dt)
@@ -65,3 +78,8 @@ class Player(CircleShape):
         shot.velocity = rotated_with_speed_vector
 
         self.shoot_cd_timer = PLAYER_SHOOT_COOLDOWN_SECONDS
+
+    def respawn(self):
+        self.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        self.respawn_invincibility_timer = PLAYER_RESPAWN_INVINCIBILITY_SECONDS
+        self.is_blinking = True

@@ -32,7 +32,7 @@ def main():
     Hud.containers = (drawable)
     
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-    # player.draw_hitbox = True
+    player.draw_hitbox = False
     hud = Hud()
     asteroid_field = AsteroidField()
 
@@ -53,9 +53,18 @@ def main():
 
         for asteroid in asteroids:
             if player.collides_with(asteroid):
-                log_event("player_hit")
-                print("Game over!")
-                sys.exit()
+                if not player.is_invincible():    
+                    log_event("player_hit")
+                    if player.lifes > 1:
+                        player.lifes -= 1
+                        player.respawn()
+                        # TODO: This feels like we need to manage a global state.
+                        # Hud class should probably have a reference to the Player object.
+                        # Refactor later.
+                        hud.lifes = player.lifes
+                    else:
+                        print("Game over!")
+                        sys.exit()
             for shot in shots:
                 if asteroid.collides_with(shot):
                     log_event("asteroid_shot")
