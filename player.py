@@ -40,11 +40,27 @@ class Player(CircleShape):
         if keys[pygame.K_d]:
             self.rotate(dt)
         
-        # Forward / backward
+        # Forward / backward (apply acceleration)
+        accelerating = False
         if keys[pygame.K_w]:
             self.move(dt)
+            accelerating = True
         if keys[pygame.K_s]:
             self.move(-dt)
+            accelerating = True
+
+        # Apply linear drag when not accelerating
+        if not accelerating:
+            speed = self.velocity.length()
+            if speed > 0:
+                speed = max(0.0, speed - PLAYER_DRAG * dt)
+                if speed == 0.0:
+                    self.velocity = pygame.Vector2(0, 0)
+                else:
+                    self.velocity.scale_to_length(speed)
+
+        # Update position from velocity
+        self.position += self.velocity * dt
 
         # Shoot
         if keys[pygame.K_SPACE]:
@@ -62,10 +78,12 @@ class Player(CircleShape):
         self.rotation += (PLAYER_TURN_SPEED * dt)
 
     def move(self, dt):
-        unit_vector = pygame.Vector2(0, 1)
-        rotated_vector = unit_vector.rotate(self.rotation)
-        rotated_with_speed_vector = rotated_vector * PLAYER_SPEED * dt
-        self.position += rotated_with_speed_vector
+        # dt positive -> forward thrust, dt negative -> backward thrust
+        direction = pygame.Vector2(0, 1).rotate(self.rotation) * (1 if dt > 0 else -1)
+        self.velocity += direction * PLAYER_ACCELERATION * abs(dt)
+        # cap max speed
+        if self.velocity.length() > PLAYER_MAX_SPEED:
+            self.velocity.scale_to_length(PLAYER_MAX_SPEED)
 
     def shoot(self):
         if self.shoot_cd_timer > 0:
@@ -75,7 +93,8 @@ class Player(CircleShape):
         unit_vector = pygame.Vector2(0, 1)
         rotated_vector = unit_vector.rotate(self.rotation)
         rotated_with_speed_vector = rotated_vector * PLAYER_SHOOT_SPEED
-        shot.velocity = rotated_with_speed_vector
+        # Shots inherit player's current velocity
+        shot.velocity = rotated_with_speed_vector + self.velocity
 
         self.shoot_cd_timer = PLAYER_SHOOT_COOLDOWN_SECONDS
 

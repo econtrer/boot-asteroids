@@ -77,6 +77,14 @@ def main():
                         particle_count=int(max(6, asteroid.radius // 2)),
                         radius_scale=(asteroid.radius / ASTEROID_MIN_RADIUS),
                     )
+                    # Log explosion for easier verification in smoke tests
+                    log_event(
+                        "explosion",
+                        x=round(asteroid.position.x, 2),
+                        y=round(asteroid.position.y, 2),
+                        radius=asteroid.radius,
+                        particles=int(max(6, asteroid.radius // 2)),
+                    )
                     score = asteroid.split()
                     hud.score += score
                     shot.kill()

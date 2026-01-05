@@ -19,3 +19,8 @@ EXPLOSION_PARTICLE_COUNT = 18
 EXPLOSION_PARTICLE_SPEED = 220
 EXPLOSION_LIFETIME_SECONDS = 0.6
 EXPLOSION_PARTICLE_RADIUS = 3
+
+# Player movement (acceleration and drag)
+PLAYER_ACCELERATION = 600            # pixels per second squared (thrust)
+PLAYER_MAX_SPEED = 350               # max player speed (px/s)
+PLAYER_DRAG = 300                    # linear drag (px/s^2) applied when not thrusting
